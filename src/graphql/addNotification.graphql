@@ -1,0 +1,6 @@
+mutation addNotification {
+  addNotification {
+    imageset_id
+    message
+  }
+}

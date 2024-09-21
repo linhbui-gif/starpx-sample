@@ -1,0 +1,7 @@
+subscription onNotification {
+  onNotification {
+    __typename
+    imageset_id
+    message
+  }
+}

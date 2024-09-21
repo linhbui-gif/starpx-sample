@@ -1,0 +1,10 @@
+query RequestImageSetDownload($request: [String!]!) {
+  requestImageSetDownload(request: $request) {
+    urls {
+      token
+      blob
+      blob_size
+      url
+    }
+  }
+}

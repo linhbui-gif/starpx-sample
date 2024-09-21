@@ -1,0 +1,6 @@
+mutation linkDropbox($code: String!) {
+  linkDropbox(code: $code) {
+    linked
+    message
+  }
+}

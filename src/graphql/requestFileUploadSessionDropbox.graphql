@@ -1,0 +1,13 @@
+query requestFileUploadSessionDropbox($files: [FileUploadRequest!]!) {
+  requestFileUploadSessionDropbox(files: $files) {
+    token
+    paths {
+      fuid
+      path
+    }
+    session {
+      error
+      sid
+    }
+  }
+}

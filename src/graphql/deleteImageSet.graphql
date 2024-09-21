@@ -1,0 +1,3 @@
+mutation deleteImageSet($id: [String!]!) {
+  deleteImageSet(id: $id)
+}

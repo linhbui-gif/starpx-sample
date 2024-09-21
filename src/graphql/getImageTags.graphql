@@ -1,0 +1,3 @@
+query getImageTags {
+  getImageTags
+}

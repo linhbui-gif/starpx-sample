@@ -1,0 +1,12 @@
+query getUserProfile {
+  getUserProfile {
+    email
+    picture
+    fullname
+    address
+    region
+    country
+    timezone
+    client_logging_enabled
+  }
+}

@@ -1,0 +1,6 @@
+query getBackendStatus {
+  getBackendStatus {
+    version
+    status
+  }
+}

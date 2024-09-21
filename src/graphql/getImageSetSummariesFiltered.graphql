@@ -1,0 +1,41 @@
+query getImageSetSummariesFiltered(
+  $limit: Int
+  $nextToken: String
+  $filterIds: [String]
+  $filterCats: [String]
+) {
+  getImageSetSummariesFiltered(
+    limit: $limit
+    nextToken: $nextToken
+    filterIds: $filterIds
+    filterCats: $filterCats
+  ) {
+    nextToken
+    image_sets {
+      caption
+      channels {
+        type
+        thumbs {
+          hd
+          large
+          medium
+          small
+          xlarge
+          full
+        }
+        full {
+          fits
+          jpg
+          tiff
+          png
+        }
+      }
+      image_detail {
+        width
+        height
+        original_name
+      }
+      set_id
+    }
+  }
+}

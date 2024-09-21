@@ -1,0 +1,6 @@
+query getObjectSuggestion($input: String!) {
+  getObjectSuggestion(input: $input) {
+    id
+    text
+  }
+}

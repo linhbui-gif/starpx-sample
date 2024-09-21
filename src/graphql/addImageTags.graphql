@@ -1,0 +1,3 @@
+mutation addImageTags($tags: [String!]!) {
+  addImageTags(tags: $tags)
+}

@@ -1,0 +1,3 @@
+mutation deleteImageTags($tags: [String!]!) {
+  deleteImageTags(tags: $tags)
+}

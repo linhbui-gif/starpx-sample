@@ -1,0 +1,3 @@
+mutation setImageSetCaption($sid: String!, $caption: String!) {
+  setImageSetCaption(sid: $sid, caption: $caption)
+}

@@ -1,0 +1,33 @@
+query getImageSetSummaries($limit: Int, $nextToken: String) {
+  getImageSetSummaries(limit: $limit, nextToken: $nextToken) {
+    nextToken
+    image_sets {
+      caption
+      creation_timestamp
+      updated_timestamp
+      channels {
+        type
+        thumbs {
+          hd
+          large
+          medium
+          small
+          xlarge
+          full
+        }
+        full {
+          fits
+          jpg
+          tiff
+          png
+        }
+      }
+      image_detail {
+        width
+        height
+        original_name
+      }
+      set_id
+    }
+  }
+}

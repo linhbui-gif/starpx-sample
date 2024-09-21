@@ -1,0 +1,3 @@
+mutation tagImageSet($sid: String!, $tags: [String!]!) {
+  tagImageSet(sid: $sid, tags: $tags)
+}

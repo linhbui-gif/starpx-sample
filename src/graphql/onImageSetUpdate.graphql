@@ -1,0 +1,16 @@
+subscription onImageSetUpdate($stream: String!) {
+  onImageSetUpdate(stream: $stream) {
+    stream
+    imageset {
+      caption
+      set_id
+      state
+      errors
+      creation_timestamp
+      updated_timestamp
+      overlay_objects
+      tags
+    }
+    deleted
+  }
+}

@@ -1,0 +1,6 @@
+query getObjectFilterCatagories {
+  getObjectFilterCatagories {
+    id
+    text
+  }
+}

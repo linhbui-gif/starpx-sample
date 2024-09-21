@@ -1,0 +1,11 @@
+mutation setUserProfile($profile: AWSJSON!) {
+  setUserProfile(profile: $profile) {
+    email
+    picture
+    fullname
+    address
+    region
+    country
+    timezone
+  }
+}

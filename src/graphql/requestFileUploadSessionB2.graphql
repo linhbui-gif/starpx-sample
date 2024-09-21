@@ -1,0 +1,24 @@
+query requestFileUploadSessionB2($files: [FileUploadRequest!]!) {
+  requestFileUploadSessionB2(files: $files) {
+    b2_upload_endpoints {
+      b2_authtoken
+      b2_uploadurl
+    }
+    b2_part_upload_endpoints {
+      b2_upload_endpoints {
+        b2_uploadurl
+        b2_authtoken
+      }
+      fuid
+    }
+    paths {
+      b2_path
+      fuid
+    }
+    session {
+      sid
+      error
+      accepted
+    }
+  }
+}

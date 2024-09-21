@@ -1,0 +1,6 @@
+query notifyFileUploadComplete($files: [FileUploadComplete!]!) {
+  notifyFileUploadComplete(files: $files) {
+    sid
+    error
+  }
+}

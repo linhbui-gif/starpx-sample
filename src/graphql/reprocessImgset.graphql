@@ -1,0 +1,3 @@
+mutation ReprocessImageSet($sid: String!) {
+  reprocessImageSet(sid: $sid)
+}

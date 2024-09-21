@@ -1,0 +1,70 @@
+query getImageSetSummary($setId: String!) {
+  getImageSetSummary(setId: $setId) {
+    overlay_objects
+    caption
+    channels {
+      full {
+        fits
+        jpg
+        tiff
+        png
+      }
+      thumbs {
+        hd
+        full
+        xlarge
+        small
+        medium
+        large
+        icon
+      }
+      type
+      height
+      width
+      channel
+      mask
+    }
+    creation_timestamp
+    errors
+    image_detail {
+      height
+      imageset_byte_size
+      sub_count
+      width
+    }
+    projection {
+      bbox {
+        ra
+        dec
+      }
+      bbox0_de
+      bbox0_ra
+      bbox1_de
+      bbox1_ra
+      center_de
+      center_ra
+      height
+      orientation
+      parity
+      pixel_area
+      proj_tan {
+        cd11
+        cd12
+        cd22
+        cd21
+        crpix1
+        crpix2
+        crval1
+        crval2
+      }
+      scale_app
+      type
+      world_area
+      width
+    }
+    set_id
+    state
+    updated_timestamp
+    tags
+  }
+}

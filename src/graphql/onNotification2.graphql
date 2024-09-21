@@ -1,0 +1,7 @@
+subscription onNotification2($stream: String!) {
+  onNotification2(stream: $stream) {
+    stream
+    message
+    imageset_id
+  }
+}
