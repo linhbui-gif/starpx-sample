@@ -1,153 +1,61 @@
-import {
-	AuthenticationDetails,
-	CognitoUser,
-	CognitoUserPool, CognitoUserSession,
-} from 'amazon-cognito-identity-js'
+import { CombinedError } from '@urql/vue'
+import { AuthenticationDetails, CognitoUser, CognitoUserSession } from 'amazon-cognito-identity-js'
 
-export const getUserPool = () => {
-	const CONFIG_COGNITO_POOL = {
-		UserPoolId: 'us-east-1_MPLMPbOrn',
-		ClientId: '7pk53f021pnn8qrr3lut7m3qgm',
-	}
-	
-	return new CognitoUserPool(CONFIG_COGNITO_POOL)
+type LoginForm = {
+	email: string
+	password: string
 }
 
-export const getCognitoUser = (username: string) => {
-	const userPool = getUserPool()
-	
-	return new CognitoUser({
-		Username: username,
-		Pool: userPool,
-	})
-}
-export const getRefreshCognitoSession = async (): Promise<boolean | undefined> => {
-	// native cognito way
-	const userPool = getUserPool()
-	const cognitoUser = userPool.getCurrentUser()
-	if (!cognitoUser) return
-	
-	// will trigger refresh if needed
-	const res: boolean = await new Promise((resolve, reject) => {
-		cognitoUser.getSession((err: Error | null, session: CognitoUserSession | null) => {
-			if (err) {
-				resolve(false)
-				return
-			} else if (session?.isValid()) {
-				const tokens = getJWTfromCognitoSession(session)
-				useSessionStore().setJWTTokens(tokens)
-			}
-			
-			resolve(true)
-		})
-	})
-	
-	return res
-}
-
-export const getJWTfromCognitoSession = (session: CognitoUserSession) => {
-	const accessJWT = session.getAccessToken().getJwtToken()
-	const idJWT = session.getIdToken().getJwtToken()
-	let refreshJWT = null
-	
-	try {
-		refreshJWT = session.getRefreshToken().getToken()
-	} catch {
-		//
-	}
-	
-	return {
-		id: idJWT,
-		access: accessJWT,
-		refresh: refreshJWT,
-	}
-}
-
-export const clearLocalStorageTokens = () => {
-	const whiteListKeys = ['Starpx.theme', 'Starpx.lang', 'upload']
-	
-	for (const key in localStorage) {
-		if (!whiteListKeys.includes(key)) {
-			localStorage.removeItem(key)
-		}
-	}
-}
-export function useAuth(formData: { email: string; password: string }) {
-	const errorMessage = ref<string>('');
-	const isLoading = ref<boolean>(false);
+export const useAuth = () => {
+	const sessionStore = useSessionStore()
+	const { executeMutation: login, fetching } = useSetUserProfile()
+	const loading = ref(false)
 	const isLoggedIn = ref(false)
-	const router = useRouter()
-	const uiStore = useUiStore()
-	const login = () => {
-		if (isLoading.value || isLoggedIn.value) {
+	const handleLogin = (options: {
+		form: LoginForm
+		onLoginSuccess?: () => void
+		onLoginError?: (error: string) => void
+		onAuthenticateFailure?: (error: any, cognitoUser: CognitoUser) => void
+	}) => {
+		if (loading.value || isLoggedIn.value) {
 			return
 		}
-		isLoading.value = true;
-		const cognitoUser = getCognitoUser(formData.email)
-
-		const authenticationDetails = new AuthenticationDetails({
-			Username: formData.email,
-			Password: formData.password,
-		});
-
-		cognitoUser.authenticateUser(authenticationDetails, {
-			onSuccess: (result) => {
-				isLoading.value = false;
+		loading.value = true
+		
+		const { form, onLoginSuccess, onLoginError, onAuthenticateFailure } = options
+		const onAuthenticateAwsSuccess = async (session: CognitoUserSession) => {
+			const tokens = getJWTfromCognitoSession(session)
+			sessionStore.setJWTTokens(tokens)
+			
+			try {
+				const { data, error } = await login({ profile: JSON.stringify({ email: form.email }) })
+				if (error) {
+					throw error
+				}
+				if (!data?.setUserProfile) return
 				isLoggedIn.value = true
-				localStorage.setItem('accessToken', result.getAccessToken().getJwtToken());
-				localStorage.setItem('refreshToken', result.getRefreshToken().getToken());
-				uiStore.addToast({
-					type: 'success',
-					message: 'Login successfully !',
-				})
-				router.push('/')
-			},
-			onFailure: (err) => {
-				isLoading.value = false;
-				handleAuthError(err, cognitoUser)
-			},
-		});
-	};
-	const handleAuthError = (err: any, cognitoUser: CognitoUser) => {
-		if (err.code === 'NotAuthorizedException' || err.code === 'UserNotFoundException') {
-			errorMessage.value = 'Email hoặc mật khẩu không chính xác.'
-			uiStore.addToast({
-				type: 'error',
-				message: errorMessage.value,
-			})
-		} else if (err.code === 'AccessTokenExpired') {
-			errorMessage.value = 'Token đã hết hạn. Vui lòng đăng nhập lại.'
-			uiStore.addToast({
-				type: 'error',
-				message: errorMessage.value,
-			})
-			cognitoUser.signOut()
-			localStorage.removeItem('accessToken');
-			localStorage.removeItem('refreshToken');
-			router.push('/login');
-		} else {
-			errorMessage.value = err.message || JSON.stringify(err)
-		}
-	}
-	
-	const refreshSession = async () => {
-		const refreshToken = localStorage.getItem('refreshToken');
-		if (!refreshToken) {
-			return;
+				sessionStore.setUser(data.setUserProfile)
+				onLoginSuccess?.()
+			} catch (error) {
+				onLoginError?.(verboseUrqlError(error as CombinedError))
+			} finally {
+				loading.value = false
+			}
 		}
 		
-		const cognitoUser = getCognitoUser(formData.email);
-		cognitoUser.refreshSession(refreshToken, (err, session) => {
-			if (err) {
-				console.error('Error refreshing session:', err);
-				return;
-			}
-			localStorage.setItem('accessToken', session.getAccessToken().getJwtToken());
-		});
-	};
+		const cognitoUser = getCognitoUser(form.email)
+		const authDetails = new AuthenticationDetails({ Username: form.email, Password: form.password })
+		cognitoUser.authenticateUser(authDetails, {
+			onSuccess: onAuthenticateAwsSuccess,
+			onFailure: (e) => {
+				onAuthenticateFailure?.(e, cognitoUser)
+				loading.value = false
+			},
+		})
+	}
+	
 	return {
-		errorMessage,
-		isLoading,
-		login,
-	};
+		login: handleLogin,
+		fetching: computed(() => fetching.value || loading.value),
+	}
 }

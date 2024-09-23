@@ -30,8 +30,9 @@ const router = createRouter({
 });
 router.beforeEach((to, from, next) => {
 	const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-	const isAuth = localStorage.getItem('accessToken')
-	if (requiresAuth && !isAuth) {
+	const sessionStore = useSessionStore()
+	const { JWTtokens } = storeToRefs(sessionStore)
+	if (requiresAuth && !JWTtokens.value) {
 		next({ name: 'Login' });
 	} else {
 		next();

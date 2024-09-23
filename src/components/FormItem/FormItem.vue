@@ -1,6 +1,6 @@
 <template>
   <div class="mb-2" :class="validateStatus">
-    <div v-if="label" class="FormItem-label mb-2">
+    <div v-if="label" class="FormItem-label text-white mb-2">
       {{ label }}
       <span v-if="required" class="text-red-500">*</span>
     </div>

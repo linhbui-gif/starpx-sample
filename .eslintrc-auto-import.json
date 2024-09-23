@@ -157,6 +157,14 @@
     "useTagImageSet": true,
     "useUnlinkDropbox": true,
     "verboseUrqlError": true,
-    "install": true
+    "install": true,
+    "useMutation": true,
+    "useQuery": true,
+    "useGalleryStore": true,
+    "getImageSize": true,
+    "ImageSizeTypes": true,
+    "thumbs": true,
+    "createCognitoSessionFromJWT": true,
+    "useCognito": true
   }
 }

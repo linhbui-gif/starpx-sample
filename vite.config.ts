@@ -14,6 +14,9 @@ export default defineConfig(() => {
 					'vue',
 					'vue-router',
 					'pinia',
+					{
+						'@urql/vue': ['useQuery', 'useMutation'],
+					},
 				],
 				dirs: [
 					'./src/hooks/*',

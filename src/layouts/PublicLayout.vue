@@ -6,4 +6,7 @@
 </template>
 <script setup lang="ts">
 import Toast from "@/components/Toast/Toast.vue";
+const sessionStore = useSessionStore()
+const { JWTtokens } = storeToRefs(sessionStore)
+
 </script>
