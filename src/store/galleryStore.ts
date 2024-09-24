@@ -65,17 +65,9 @@ export const useGalleryStore = defineStore('gallery', {
 		const setImageSets = (val: ImageSets): void => {
 			imageSets.value = val
 		}
-		
-		const filterIds = computed((): string[] => {
-			const filterSelection =
-				filterCategories.value?.filter((item) => {
-					const keys = Object.keys(filter.value)
-					return keys.some((key) => filter.value[key] && key === item?.id)
-				}) ?? []
-			
-			return filterSelection?.map((item) => item?.id ?? '')
-		})
-		
+		const setFilterCategories = (arr:string[]) => {
+			filterCategories.value = arr;
+		}
 		const addImageSet = (imageSet: ImageSetSummary) => {
 			setImageSets([imageSet, ...imageSets.value])
 		}
@@ -101,9 +93,9 @@ export const useGalleryStore = defineStore('gallery', {
 			deleteSetTimer,
 			setDeleteSetTimer,
 			filterCategories,
-			filterIds,
 			addImageSet,
 			removeImageSet,
+			setFilterCategories
 		}
 	},
 	persist: [
