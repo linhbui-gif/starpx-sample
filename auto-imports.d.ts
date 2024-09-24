@@ -151,6 +151,7 @@ declare global {
   const useSetUserProfile: typeof import('./src/graphql/generated/index')['useSetUserProfile']
   const useSlots: typeof import('vue')['useSlots']
   const useTagImageSet: typeof import('./src/graphql/generated/index')['useTagImageSet']
+  const useTagStore: typeof import('./src/store/tagStore')['useTagStore']
   const useTemplateRef: typeof import('vue')['useTemplateRef']
   const useUiStore: typeof import('./src/store/uiStore')['useUiStore']
   const useUnlinkDropbox: typeof import('./src/graphql/generated/index')['useUnlinkDropbox']

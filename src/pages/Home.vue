@@ -2,7 +2,7 @@
   <div class="-m-2 container px-2 mx-auto mt-3.5">
     <div class="flex justify-between bg-gray-800 p-2.5 rounded">
       <TagFilter/>
-      <SearchBox />
+      <SearchBox @on-change="handleChangeSearchSelected" @on-clear="onClear" />
     </div>
   </div>
   <Suspense>
@@ -16,6 +16,7 @@
 </template>
 <script setup lang="ts">
 import {
+  GetImageSetSummaries, GetImageSetSummariesDocument,
   GetImageSetSummariesFiltered, GetImageSetSummariesFilteredDocument,
   GetImageSetSummariesFilteredVariables,
   GetImageSetSummariesVariables
@@ -33,6 +34,7 @@ const variables = reactive<GetImageSetSummariesVariables>({
   limit: 100,
 })
 const loading = ref(false)
+const selectedItem = ref([])
 const { data, fetching } = await useGetImageSetSummaries({
   variables,
   requestPolicy: 'cache-and-network',
@@ -57,7 +59,7 @@ galleryStore.setImageSets(newImageSets)
 const getGalleryByCategories = async (params) => {
   try {
     loading.value = true
-    const response = await urqlClient.query<GetImageSetSummariesFiltered, GetImageSetSummariesFilteredVariables>(GetImageSetSummariesFilteredDocument, {params})
+    const response = await urqlClient.query<GetImageSetSummariesFiltered, GetImageSetSummariesFilteredVariables>(GetImageSetSummariesFilteredDocument, {...params})
     const data = response?.data
     if(!response?.error) {
       loading.value = false
@@ -68,6 +70,32 @@ const getGalleryByCategories = async (params) => {
     loading.value = false
     console.log ('err', e)
   }
+}
+const handleChangeSearchSelected = (data:any) => {
+  const filterCats  = {filterCats: data}
+  if(data.length > 0) {
+    selectedItem.value = data
+  }
+  getGalleryByCategories(filterCats)
+}
+
+const getGallerySumaries = async (params) => {
+  try {
+    loading.value = true
+    const response = await urqlClient.query<GetImageSetSummaries, GetImageSetSummariesVariables>(GetImageSetSummariesDocument, {...params})
+    const data = response?.data
+    if(!response?.error) {
+      loading.value = false
+      const imageSet = data?.getImageSetSummaries?.image_sets || []
+      galleryStore.setImageSets(imageSet)
+    }
+  } catch (e) {
+    loading.value = false
+    console.log ('err', e)
+  }
+}
+const onClear  = () => {
+  getGallerySumaries(variables);
 }
 </script>
 <style lang="scss">
